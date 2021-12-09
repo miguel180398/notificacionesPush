@@ -15,18 +15,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
     <script>
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyA-MKzbTOyPC73xOJZ2EjBi5KqHArwcBaE",
-          authDomain: "pruebanotificacionespush-f9ef1.firebaseapp.com",
-          databaseURL: "https://pruebanotificacionespush-f9ef1-default-rtdb.firebaseio.com",
-          projectId: "pruebanotificacionespush-f9ef1",
-          storageBucket: "pruebanotificacionespush-f9ef1.appspot.com",
-          messagingSenderId: "444419119429",
-          appId: "1:444419119429:web:d9ccd1cc778de55f66862c"
-        };
-        firebase.initializeApp(firebaseConfig);
-
-
         if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/firebase-messaging-sw.js').then(function(registration) {
@@ -40,6 +28,36 @@
 }
 
 
+    const firebaseConfig = {
+          apiKey: "AIzaSyA-MKzbTOyPC73xOJZ2EjBi5KqHArwcBaE",
+          authDomain: "pruebanotificacionespush-f9ef1.firebaseapp.com",
+          databaseURL: "https://pruebanotificacionespush-f9ef1-default-rtdb.firebaseio.com",
+          projectId: "pruebanotificacionespush-f9ef1",
+          storageBucket: "pruebanotificacionespush-f9ef1.appspot.com",
+          messagingSenderId: "444419119429",
+          appId: "1:444419119429:web:d9ccd1cc778de55f66862c"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = app.firestore();
+
+        const token = "";
+
+        function ObtenerTokenRegistrado(){
+
+            
+            db.collection("cities")
+               .get()
+               .then((querySnapshot) => {
+                   querySnapshot.forEach((doc) => {
+                       // doc.data() is never undefined for qdoc snapshots
+                       console.log(doc.id, " => ", doc.data().token);
+                       token=Object.assign(doc.data().token);
+                   });
+               })
+               .catch((error) => {
+                   console.log("Error getting documents: ", error);
+               });
+        }
 
         const messaging =firebase.messaging();
         function initializeFireBaseMessaging(){
@@ -53,10 +71,32 @@
                 .then(function(token){
                     console.log("token: "+ token);
                     document.getElementById("token").innerHTML= token;
+                    
+                    db.collection("cities").doc("LA").set({
+                            name: "Los Angeles",
+                            state: "CA",
+                            country: "USA",
+                            token: token
+                        })
+                        .then(() => {
+                            console.log("Document successfully written!");
+                        })
+                        .catch((error) => {
+                            console.error("Error writing document: ", error);
+                        });
+
+                    console.log("ejecutando")
+                    console.log("este es el token de la funcion", token);
+
+
                 })
                 .catch(function(reason){
                     console.log(reason);
                 });
+
+
+                
+
         }
         messaging.onMessage(function(){
             console.log(payload);
