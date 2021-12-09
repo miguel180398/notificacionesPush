@@ -16,15 +16,18 @@ const firebaseConfig = {
 
         const messaging =firebase.messaging();
 
-messaging.setBackgroudMessageHandler(function(payload){
-    console.log(payload)
+messaging.setBackgroundMessageHandler(function (payload) {
+  console.log('Handling background message ', payload);
+
+  return self.registration.showNotification(payload.data.title, {
+    body: payload.data.body,
+    icon: payload.data.icon,
+    tag: payload.data.tag,
+    data: payload.data.link,
+  });
 });
 
-if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('../firebase-messaging-sw.js')
-  .then(function(registration) {
-    console.log('Registration successful, scope is:', registration.scope);
-  }).catch(function(err) {
-    console.log('Service worker registration failed, error:', err);
-  });
-}
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow(event.notification.data));
+});
