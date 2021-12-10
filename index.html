@@ -71,8 +71,8 @@
                 .then(function(token){
                     console.log("token: "+ token);
                     document.getElementById("token").innerHTML= token;
-                    
-                    db.collection("cities").doc("LA").set({
+                    var num = Math.floor((Math.random() * (11-5))+5);
+                    db.collection("cities").doc(`otro${num}`).set({
                             name: "Los Angeles",
                             state: "CA",
                             country: "USA",
@@ -84,8 +84,8 @@
                         .catch((error) => {
                             console.error("Error writing document: ", error);
                         });
-
-                    console.log("ejecutando")
+                    
+                    console.log("ejecutando:",num)
                     console.log("este es el token de la funcion", token);
 
 
